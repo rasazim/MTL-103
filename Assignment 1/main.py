@@ -75,9 +75,9 @@ for i in range(m):
 A=np.c_[A,np.identity(m,dtype=fr)]
 x = np.r_[np.zeros((n,1),dtype=fr),b]
 B = list(range(n,n+m))
-cd = np.r_[np.zeros(1,n),np.ones(1,m)]
-ch = cd - np.ones(1,m) * 
-M = np.r_[np.c_[0],np.c_[b,A]]
+cd = np.c_[np.zeros((1,n),dtype=fr),np.ones((1,m),dtype=fr)]
+ch = cd - np.matmul(np.ones((1,m),dtype=fr), A)
+M = np.r_[np.c_[0,ch],np.c_[b,A]]
 print(M)
 
 
