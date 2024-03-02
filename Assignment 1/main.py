@@ -7,7 +7,7 @@ def solve():
     maxim = False
     status="optimal"
     ans={}
-    with open("Assignment 1/input_1.txt","r") as f:
+    with open("input.txt","r") as f:
         inp = f.read()
 
     inp=inp.split('\n')
