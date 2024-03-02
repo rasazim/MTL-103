@@ -1,5 +1,5 @@
-f = open("command.txt", "r")
-f1 = open("output.txt", "w")
+f = open("commands.txt", "r")
+f1 = open("output.txt", "w+")
 
 content = f.readlines()
 
