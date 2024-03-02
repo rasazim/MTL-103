@@ -3,7 +3,6 @@ from fractions import Fraction as fr
 
 def solve():
     n=0
-    n_o=0
     m=0
     maxim = False
     status="optimal"
@@ -182,8 +181,8 @@ def solve():
             x[B[i]]+=A[i,0]
         elif(B[i]<2*n):
             x[B[i]]-=A[i,0]
-
     ans["optimal_solution"] = x
+    if(maxim): r_0[0,0] = -r_0[0,0]
     ans["optimal_value"] = r_0[0,0]
     return ans
 
