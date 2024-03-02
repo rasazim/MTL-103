@@ -57,7 +57,7 @@ def solve():
 
 
     pi=pi+2
-    c = list(map(fr,inp[pi].split(', ')))
+    c = list(map(fr,inp[pi].replace(' ','').split(',')))
     c = np.array([c])
     c = np.c_[c,-c,fr(1)*np.zeros((1,ns),dtype=fr)]
     if(inp[1]=='maximize'):
