@@ -1,13 +1,13 @@
 import numpy as np
 from fractions import Fraction as fr
 
-def solve():
+def simplex_algo():
     n=0
     m=0
     maxim = False
     status="optimal"
     ans={}
-    with open("testcase.txt","r") as f:
+    with open("input.txt","r") as f:
         inp = f.read()
 
     inp=inp.split('\n')
@@ -60,6 +60,7 @@ def solve():
     c = list(map(fr,inp[pi].replace(' ','').split(',')))
     c = np.array([c])
     c = np.c_[c,-c,fr(1)*np.zeros((1,ns),dtype=fr)]
+    # print(c)
     if(inp[1]=='maximize'):
         c=-c
         maxim=True
@@ -78,7 +79,7 @@ def solve():
 
     # print(np.r_[r_0,M])
     # print("----------------")
-    ans["initial_tableau"]=np.copy(A)
+    ans["initial_tableau"]=np.array(M,dtype=float)
     while True:
         p_c=1
         while r_0[0,p_c]>=0:
@@ -173,23 +174,26 @@ def solve():
         # print("----------------")
 
         # print(r_0[0,0])
-    ans["final_tableau"] = np.copy(A)
+    # print(B)
+    ans["final_tableau"] = np.array(M,dtype=float)
     ans["solution_status"] = status
     x = np.zeros(n,dtype=fr)
     for i in range(m):
         if(B[i]<n):
-            x[B[i]]+=A[i,0]
+            x[B[i]]+=M[i,0]
         elif(B[i]<2*n):
-            x[B[i]-n]-=A[i,0]
-    ans["optimal_solution"] = x
+            x[B[i]-n]-=M[i,0]
+    ans["optimal_solution"] = np.array(x,dtype=float)
     if(maxim): r_0[0,0] = -r_0[0,0]
-    ans["optimal_value"] = r_0[0,0]
+    ans["optimal_value"] = float(-r_0[0,0])
     return ans
 
-ans= solve()
-
-print(np.array(ans['initial_tableau'],dtype=str))
-print(np.array(ans['final_tableau'],dtype=str))
-print(np.array(ans['optimal_solution'],dtype=str))
-print(float(ans['optimal_value']))
-print(ans['solution_status'])
+# ans= simplex_algo()
+# import pprint
+# # print(np.array(ans['initial_tableau'],dtype=str))
+# np.set_printoptions(threshold=np.inf)
+# pp = pprint.PrettyPrinter(indent=4)
+# pp.pprint(np.array(ans['final_tableau'],dtype=float))
+# print(np.array(ans['optimal_solution'],dtype=float))
+# print(float(ans['optimal_value']))
+# print(ans['solution_status'])
