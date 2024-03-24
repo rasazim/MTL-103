@@ -212,6 +212,7 @@ for i in range(len(B)):
 print('initial_solution: ',end='')
 print(*x,sep=', ')
 n_cuts=0
+n_or2=len(A[0])-1
 
 if(status == 'infeasible'):
     pass
@@ -227,6 +228,7 @@ else:
             a = i
             break
     while a!=-1:
+        print(n_cuts)
         n_cuts+=1
         A = np.c_[np.r_[A,np.array([list(map(floor,A[a]))],dtype=fr) - A[a,:]],fr(0)*np.zeros((m+2,1),dtype=fr)]
         A[m+1,n+1]=fr(1)
@@ -240,7 +242,7 @@ else:
         tbdA = []
         tbdB = []
         for i in range(m):
-            if(B[i]>n_or):
+            if(B[i]>n_or2):
                 tbdB.append(i+1)
                 tbdA.append(B[i])
                 m-=1
