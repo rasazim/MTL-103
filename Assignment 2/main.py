@@ -3,7 +3,7 @@ from math import *
 from fractions import Fraction as fr
 import os
 
-file = 'input_ilp1.txt'
+file = 'input_ilp2.txt'
 
 
 def dual_simplex(A,B):
@@ -237,6 +237,19 @@ else:
         if(not fes):
             status ='infeasible'
             break
+        tbdA = []
+        tbdB = []
+        for i in range(m):
+            if(B[i]>n_or):
+                tbdB.append(i+1)
+                tbdA.append(B[i])
+                m-=1
+                n-=1
+        A = np.delete(A,tbdA,axis=1)
+        A = np.delete(A,tbdB,axis=0)
+        tbdB = sorted(tbdB,reverse=True)
+        for a in tbdB:
+            B.pop(a-1)
         a = -1
         for i in range(1,m+1):
             if(A[i,0] != floor(A[i,0]) and B[i-1]<=n_or):
