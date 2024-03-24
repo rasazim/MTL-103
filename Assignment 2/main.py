@@ -229,7 +229,7 @@ else:
             break
     while a!=-1:
         n_cuts+=1
-        print( list(map(float,A[:,0])))
+        # print( list(map(float,A[:,0])))
         A = np.c_[np.r_[A,np.array([list(map(floor,A[a]))],dtype=fr) - A[a,:]],fr(0)*np.zeros((m+2,1),dtype=fr)]
         A[m+1,n+1]=fr(1)
         B.append(n+1)
