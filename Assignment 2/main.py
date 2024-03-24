@@ -3,7 +3,7 @@ from math import *
 from fractions import Fraction as fr
 import os
 
-file = 'input_ilp.txt'
+file = 'input_ilp1.txt'
 
 
 def dual_simplex(A,B):
@@ -179,7 +179,7 @@ b= np.array([b]).T
 pi=pi+2
 j=0
 while True:
-    con = inp[pi]
+    con = inp[pi].replace(' ','')
     if(con==''):
         break
     if(con=='<='):

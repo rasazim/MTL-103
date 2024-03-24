@@ -7,7 +7,7 @@ def simplex_algo():
     maxim = False
     status="optimal"
     ans={}
-    with open("input.txt","r") as f:
+    with open("Assignment 2/input_ilp1.txt","r") as f:
         inp = f.read()
 
     inp=inp.split('\n')
@@ -112,8 +112,10 @@ def simplex_algo():
     else:
         M = M[0:m,0:2*n+ns+1]
         tbd =[]
+        print(1.0*M)
         for j in range(m):
             if(not M[j].any()):
+                print(M[j])
                 tbd.append(j)
             elif(B[j]>=2*n+ns):
                 p_r = j
@@ -127,7 +129,7 @@ def simplex_algo():
                 M = M - np.matmul(np.array([M[:,p_c]]).T,np.array([M[p_r]]))
                 M[:,p_c] = fr(1)*np.zeros(m,dtype=fr)
                 M[p_r,p_c] = fr(1)
-
+        print(tbd)
         M=np.delete(M,tbd,axis=0)
         for j in tbd:
             B.pop(j)
@@ -173,8 +175,8 @@ def simplex_algo():
         # print(np.r_[r_0,M])
         # print("----------------")
 
-        # print(r_0[0,0])
-    # print(B)
+        print(r_0)
+    print(B)
     ans["final_tableau"] = np.array(M,dtype=float)
     ans["solution_status"] = status
     x = np.zeros(n,dtype=fr)
@@ -189,11 +191,11 @@ def simplex_algo():
     return ans
 
 ans= simplex_algo()
-# import pprint
-# print(np.array(ans['initial_tableau'],dtype=str))
+import pprint
+# # print(np.array(ans['initial_tableau'],dtype=str))
 # np.set_printoptions(threshold=np.inf)
-# pp = pprint.PrettyPrinter(indent=4)
-# pp.pprint(np.array(ans['final_tableau'],dtype=float))
+pp = pprint.PrettyPrinter(indent=4)
+pp.pprint(np.array(ans['final_tableau'],dtype=float))
 print(np.array(ans['optimal_solution'],dtype=float))
-# print(float(ans['optimal_value']))
-# print(ans['solution_status'])
+print(float(ans['optimal_value']))
+print(ans['solution_status'])
