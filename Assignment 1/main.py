@@ -188,12 +188,12 @@ def simplex_algo():
     ans["optimal_value"] = float(-r_0[0,0])
     return ans
 
-# ans= simplex_algo()
+ans= simplex_algo()
 # import pprint
-# # print(np.array(ans['initial_tableau'],dtype=str))
+# print(np.array(ans['initial_tableau'],dtype=str))
 # np.set_printoptions(threshold=np.inf)
 # pp = pprint.PrettyPrinter(indent=4)
 # pp.pprint(np.array(ans['final_tableau'],dtype=float))
-# print(np.array(ans['optimal_solution'],dtype=float))
+print(np.array(ans['optimal_solution'],dtype=float))
 # print(float(ans['optimal_value']))
 # print(ans['solution_status'])

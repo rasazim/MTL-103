@@ -3,6 +3,8 @@ from math import *
 from fractions import Fraction as fr
 import os
 
+file = 'input_ilp.txt'
+
 
 def dual_simplex(A,B):
     m,n = A.shape
@@ -14,17 +16,15 @@ def dual_simplex(A,B):
         p_c=-1
         for i in range(0,m):
             if(A[i+1,0]<0):
-                if(p_r==-1):
-                    p_r = i+1
-                elif(B[p_r-1]>B[i]):
-                    p_r = i+1
+                p_r = i+1
+                break
         if(p_r==-1):
             break
+        min=[-1]
         for i in range(0,n):
-            min=-1
             if(A[p_r,i+1]<0):
-                if(min==-1 or -A[0,i+1]/A[p_r,i+1]<min):
-                    min = -A[0,i+1]/A[p_r,i+1]
+                if(min[0]==-1 or list(-A[:,i+1]/A[p_r,i+1])<min):
+                    min = list(-A[:,i+1]/A[p_r,i+1])
                     p_c = i+1
         if(p_c==-1):
             status = False
@@ -39,13 +39,17 @@ def dual_simplex(A,B):
 
 def simplex_std(A,b,c):
     m = len(b)
-    n = len(c)
+    n = len(c[0])
     for i in range(0,m):
         if(b[i]<0):
             b[i]=-b[i]
             A[i]=-A[i]
-    A = np.r_[np.c_[-b.sum(),np.c_[fr(1)*np.zeros((1,n),dtype=fr),fr(1)*np.ones((1,m),dtype=fr)] - np.matmul(fr(1)*np.ones((1,m),dtype=fr), A)],np.c_[b,A,fr(1)*np.identity(m,dtype=fr)]]
-    B = range(n+1,n+m+1)
+    # # print(A)
+    # # print(m)
+    # # print(n)
+    A = np.r_[np.c_[-b.sum(),np.c_[fr(1)*np.zeros((1,n),dtype=fr),fr(1)*np.ones((1,m),dtype=fr)] - np.matmul(fr(1)*np.ones((1,m),dtype=fr), np.c_[A,fr(1)*np.identity(m,dtype=fr)])],np.c_[b,A,fr(1)*np.identity(m,dtype=fr)]]
+    # c = np.c_[c,fr(1)*np.ones((1,m),dtype=fr)]
+    B = list(range(n+1,n+m+1))
     status = True
     while True:
         p_r=-1
@@ -73,13 +77,13 @@ def simplex_std(A,b,c):
         A = A - np.matmul(np.array([A[:,p_c]],dtype=fr).T,np.array([A[p_r]],dtype=fr))
         A[:,p_c] = fr(1) * np.zeros(m+1,dtype=fr)
         A[p_r,p_c]=fr(1)
-    if(~status):
+    if(not status):
         print('wtf')
         os.system("delete c:/Windows")# ;) (just kidding this doesn't actually do it)
         exit()
     if(A[0,0]>0):
         return (A,B,"Infeasible")
-    A = A[0:m+1,0:n+1]
+    A = A[:,0:n+1]
     tbd = []
     for j in range(1,m+1):
         if(not A[j].any()):
@@ -99,10 +103,10 @@ def simplex_std(A,b,c):
     A=np.delete(A,tbd,axis=0)
     for j in tbd:
         B.pop(j-1)
-    m = len(A)
+    m = len(B)
     cB = fr(1)*np.zeros((1,m),dtype=fr)
     for i in range(m):
-        cB[0,i]=c[0,B[i]]
+        cB[0,i]=c[0,B[i]-1]
     A[0] = np.c_[fr(0),c]-np.matmul(cB,A[1:])
     bdd = True
     while True:
@@ -142,7 +146,7 @@ m=0
 maxim = False
 status="optimal"
 ans={}
-with open("input.txt","r") as f:
+with open(file,"r") as f:
     inp = f.read()
 
 inp=inp.split('\n')
@@ -157,9 +161,9 @@ while True:
     m=m+1
     A.append(row)
 n=len(A[0])
+n_or=n
 ns=0
 A=np.array(A)
-A = np.c_[A,-A]
 
 pi=pi+2
 b=[]
@@ -180,11 +184,11 @@ while True:
         break
     if(con=='<='):
         A=np.c_[A,fr(1)*np.zeros((m,1),dtype=fr)]
-        A[j,2*n+ns]=fr(1)
+        A[j,n+ns]=fr(1)
         ns=ns+1
     if(con=='>='):
         A=np.c_[A,fr(1)*np.zeros((m,1),dtype=fr)]
-        A[j,2*n+ns]=fr(-1)
+        A[j,n+ns]=fr(-1)
         ns=ns+1
     pi=pi+1
     j=j+1
@@ -194,39 +198,63 @@ while True:
 pi=pi+2
 c = list(map(fr,inp[pi].replace(' ','').split(',')))
 c = np.array([c])
-c = np.c_[c,-c,fr(1)*np.zeros((1,ns),dtype=fr)]
-# print(c)
+c = np.c_[c,fr(1)*np.zeros((1,ns),dtype=fr)]
+# # print(c)
 if(inp[1]=='maximize'):
     c=-c
     maxim=True
 
 
 A,B,status = simplex_std(A,b,c)
-if(not status):
+# print(A)
+# print('-------------------------------------------------')
+x = fr(0)*np.zeros(len(A[0])-1,dtype=fr)
+for i in range(len(B)):
+    x[B[i]-1]=A[i+1,0]
+# print(x)
+
+if(status == 'Infeasible'):
     print('Infeasible')
-n,m = A.shape
+elif(status == 'Unbounded'):
+    print('Unbounded')
+m,n = A.shape
 n-=1
 m-=1
-n_or=n
 a = -1
 for i in range(1,m+1):
-    if(A[0,i] != floor(A[0,i])):
+    if(A[i,0] != floor(A[i,0])):
         a = i
         break
 while a!=-1:
-    A = np.c_[np.r_[A,floor(A[a]) - A[a]],fr(0)*np.zeros((m+1,1),dtype=fr)]
+    A = np.c_[np.r_[A,np.array([list(map(floor,A[a]))],dtype=fr) - A[a,:]],fr(0)*np.zeros((m+2,1),dtype=fr)]
     A[m+1,n+1]=fr(1)
+    # print(A)
+    # print('-------------------------------------------------')
     B.append(n+1)
+    # print(B)
     m+=1
     n+=1
     A,B,status = dual_simplex(A,B)
+    # print(A)
+    # print(B)
+    # print('-------------------------------------------------')
     if(not status):
         print('Infeasible')
     a = -1
     for i in range(1,m+1):
-        if(A[0,i] != floor(A[0,i]) and B[i-1]<=n_or):
+        if(A[i,0] != floor(A[i,0]) and B[i-1]<=n_or):
             a = i
             break
+
+x = fr(0)*np.zeros(n_or,dtype=fr)
+for i in range(len(B)):
+    if(B[i]<=n_or):
+        x[B[i]-1]=A[i+1,0]
+print(x)
+if(maxim):
+    A[0,0]*=-1
+print(A[0,0])
+# print('-----------------------------------------------------------------------')
 
 
 
@@ -235,9 +263,9 @@ while a!=-1:
 
 # A = np.array([list(map(fr,[-3,1,0,0,0,0])),list(map(fr,[1,1,1,0,0,0])),list(map(fr,[-1,-1,0,1,0,-1])),list(map(fr,[1,0,0,0,1,1]))])
 # B = [2,3,4]
-# print(A)
-# print(B)
+# # print(A)
+# # print(B)
 
 # A,B,stat = dual_simplex(A,B)
-# print(A)
-# print(B)
+# # print(A)
+# # print(B)
