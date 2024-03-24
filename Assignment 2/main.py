@@ -50,7 +50,7 @@ def simplex_std(A,b,c):
     A = np.r_[np.c_[-b.sum(),np.c_[fr(1)*np.zeros((1,n),dtype=fr),fr(1)*np.ones((1,m),dtype=fr)] - np.matmul(fr(1)*np.ones((1,m),dtype=fr), np.c_[A,fr(1)*np.identity(m,dtype=fr)])],np.c_[b,A,fr(1)*np.identity(m,dtype=fr)]]
     # c = np.c_[c,fr(1)*np.ones((1,m),dtype=fr)]
     B = list(range(n+1,n+m+1))
-    status = True
+    bdd = True
     while True:
         p_r=-1
         p_c=-1
@@ -69,7 +69,7 @@ def simplex_std(A,b,c):
                 elif(A[j,0]/A[j,p_c]==min and B[j-1]<B[p_r-1]):
                     p_r=j
         if(p_r==-1):
-            status = False
+            bdd = False
             break
         B[p_r-1] = p_c
         A[p_r] = A[p_r] / A[p_r,p_c]
@@ -77,7 +77,7 @@ def simplex_std(A,b,c):
         A = A - np.matmul(np.array([A[:,p_c]],dtype=fr).T,np.array([A[p_r]],dtype=fr))
         A[:,p_c] = fr(1) * np.zeros(m+1,dtype=fr)
         A[p_r,p_c]=fr(1)
-    if(not status):
+    if(not bdd):
         print('wtf')
         os.system("delete c:/Windows")# ;) (just kidding this doesn't actually do it)
         exit()
@@ -199,15 +199,12 @@ pi=pi+2
 c = list(map(fr,inp[pi].replace(' ','').split(',')))
 c = np.array([c])
 c = np.c_[c,fr(1)*np.zeros((1,ns),dtype=fr)]
-# # print(c)
 if(inp[1]=='maximize'):
     c=-c
     maxim=True
 
 
 A,B,status = simplex_std(A,b,c)
-# print(A)
-# print('-------------------------------------------------')
 x = np.zeros(n_or,dtype=float)
 for i in range(len(B)):
     if(B[i]<=n_or):
@@ -233,16 +230,10 @@ else:
         n_cuts+=1
         A = np.c_[np.r_[A,np.array([list(map(floor,A[a]))],dtype=fr) - A[a,:]],fr(0)*np.zeros((m+2,1),dtype=fr)]
         A[m+1,n+1]=fr(1)
-        # print(A)
-        # print('-------------------------------------------------')
         B.append(n+1)
-        # print(B)
         m+=1
         n+=1
         A,B,fes = dual_simplex(A,B)
-        # print(A)
-        # print(B)
-        # print('-------------------------------------------------')
         if(not fes):
             status ='infeasible'
             break
@@ -258,8 +249,8 @@ for i in range(len(B)):
         x[B[i]-1]=A[i+1,0]
 print('final_solution: ',end='')
 print(*x,sep=', ')
-print('status:',status)
-print('number_of_cut:',n_cuts)
+print('solution_status:',status)
+print('number_of_cuts:',n_cuts)
 if(not maxim):
     A[0,0]*=-1
 print('optimal_value:',float(A[0,0]))
