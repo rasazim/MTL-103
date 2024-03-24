@@ -3,7 +3,7 @@ from math import *
 from fractions import Fraction as fr
 import os
 
-file = 'input_ilp.txt'
+file = 'input.txt'
 
 
 def dual_simplex(A,B):
@@ -251,7 +251,7 @@ for i in range(len(B)):
     if(B[i]<=n_or):
         x[B[i]-1]=A[i+1,0]
 print(x)
-if(maxim):
+if(not maxim):
     A[0,0]*=-1
 print(A[0,0])
 # print('-----------------------------------------------------------------------')
