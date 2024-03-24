@@ -3,7 +3,7 @@ from math import *
 from fractions import Fraction as fr
 import os
 
-file = 'input.txt'
+file = 'input_ilp.txt'
 
 
 def dual_simplex(A,B):
@@ -82,7 +82,7 @@ def simplex_std(A,b,c):
         os.system("delete c:/Windows")# ;) (just kidding this doesn't actually do it)
         exit()
     if(A[0,0]>0):
-        return (A,B,"Infeasible")
+        return (A,B,"infeasible")
     A = A[:,0:n+1]
     tbd = []
     for j in range(1,m+1):
@@ -136,9 +136,9 @@ def simplex_std(A,b,c):
         A[:,p_c] = fr(1) * np.zeros(m+1,dtype=fr)
         A[p_r,p_c]=fr(1)
     if(bdd):
-        return (A,B,'Optimal')
+        return (A,B,'optimal')
     else:
-        return (A,B,'Unbounded')
+        return (A,B,'unbounded')
 
 
 n=0
@@ -208,64 +208,58 @@ if(inp[1]=='maximize'):
 A,B,status = simplex_std(A,b,c)
 # print(A)
 # print('-------------------------------------------------')
-x = fr(0)*np.zeros(len(A[0])-1,dtype=fr)
-for i in range(len(B)):
-    x[B[i]-1]=A[i+1,0]
-# print(x)
-
-if(status == 'Infeasible'):
-    print('Infeasible')
-elif(status == 'Unbounded'):
-    print('Unbounded')
-m,n = A.shape
-n-=1
-m-=1
-a = -1
-for i in range(1,m+1):
-    if(A[i,0] != floor(A[i,0])):
-        a = i
-        break
-while a!=-1:
-    A = np.c_[np.r_[A,np.array([list(map(floor,A[a]))],dtype=fr) - A[a,:]],fr(0)*np.zeros((m+2,1),dtype=fr)]
-    A[m+1,n+1]=fr(1)
-    # print(A)
-    # print('-------------------------------------------------')
-    B.append(n+1)
-    # print(B)
-    m+=1
-    n+=1
-    A,B,status = dual_simplex(A,B)
-    # print(A)
-    # print(B)
-    # print('-------------------------------------------------')
-    if(not status):
-        print('Infeasible')
-    a = -1
-    for i in range(1,m+1):
-        if(A[i,0] != floor(A[i,0]) and B[i-1]<=n_or):
-            a = i
-            break
-
-x = fr(0)*np.zeros(n_or,dtype=fr)
+x = np.zeros(n_or,dtype=float)
 for i in range(len(B)):
     if(B[i]<=n_or):
         x[B[i]-1]=A[i+1,0]
-print(x)
+print('initial_solution: ',end='')
+print(*x,sep=', ')
+n_cuts=0
+
+if(status == 'infeasible'):
+    pass
+elif(status == 'unbounded'):
+    pass
+else:
+    m,n = A.shape
+    n-=1
+    m-=1
+    a = -1
+    for i in range(1,m+1):
+        if(A[i,0] != floor(A[i,0])):
+            a = i
+            break
+    while a!=-1:
+        n_cuts+=1
+        A = np.c_[np.r_[A,np.array([list(map(floor,A[a]))],dtype=fr) - A[a,:]],fr(0)*np.zeros((m+2,1),dtype=fr)]
+        A[m+1,n+1]=fr(1)
+        # print(A)
+        # print('-------------------------------------------------')
+        B.append(n+1)
+        # print(B)
+        m+=1
+        n+=1
+        A,B,fes = dual_simplex(A,B)
+        # print(A)
+        # print(B)
+        # print('-------------------------------------------------')
+        if(not fes):
+            status ='infeasible'
+            break
+        a = -1
+        for i in range(1,m+1):
+            if(A[i,0] != floor(A[i,0]) and B[i-1]<=n_or):
+                a = i
+                break
+
+x = np.zeros(n_or,dtype=int)
+for i in range(len(B)):
+    if(B[i]<=n_or):
+        x[B[i]-1]=A[i+1,0]
+print('final_solution: ',end='')
+print(*x,sep=', ')
+print('status:',status)
+print('number_of_cut:',n_cuts)
 if(not maxim):
     A[0,0]*=-1
-print(A[0,0])
-# print('-----------------------------------------------------------------------')
-
-
-
-    
-    
-
-# A = np.array([list(map(fr,[-3,1,0,0,0,0])),list(map(fr,[1,1,1,0,0,0])),list(map(fr,[-1,-1,0,1,0,-1])),list(map(fr,[1,0,0,0,1,1]))])
-# B = [2,3,4]
-# # print(A)
-# # print(B)
-
-# A,B,stat = dual_simplex(A,B)
-# # print(A)
-# # print(B)
+print('optimal_value:',float(A[0,0]))
