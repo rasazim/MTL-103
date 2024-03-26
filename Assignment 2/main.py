@@ -168,15 +168,15 @@ while True:
     b.append(fr(bi))
 b= np.array([b]).T
 
-M=1
-for i in A:
-    for j in i:
-        M = lcm(M,j.denominator)
-for i in b:
-    for j in i:
-        M = lcm(M,j.denominator)
-A*=M
-b*=M
+# M=1
+# for i in A:
+#     for j in i:
+#         M = lcm(M,j.denominator)
+# for i in b:
+#     for j in i:
+#         M = lcm(M,j.denominator)
+# A*=M
+# b*=M
 
 pi=pi+2
 j=0
