@@ -3,7 +3,7 @@ from math import *
 from fractions import Fraction as fr
 import os
 
-file = 'Assignment 2/input_ilp2.txt'
+file = 'input_ilp.txt'
 
 
 def dual_simplex(A,B):
