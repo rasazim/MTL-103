@@ -3,7 +3,7 @@ from math import *
 from fractions import Fraction as fr
 import os
 
-file = 'input_ilp2.txt'
+file = 'Assignment 2/input_ilp2.txt'
 
 
 def dual_simplex(A,B):
@@ -44,11 +44,7 @@ def simplex_std(A,b,c):
         if(b[i]<0):
             b[i]=-b[i]
             A[i]=-A[i]
-    # # print(A)
-    # # print(m)
-    # # print(n)
     A = np.r_[np.c_[-b.sum(),np.c_[fr(1)*np.zeros((1,n),dtype=fr),fr(1)*np.ones((1,m),dtype=fr)] - np.matmul(fr(1)*np.ones((1,m),dtype=fr), np.c_[A,fr(1)*np.identity(m,dtype=fr)])],np.c_[b,A,fr(1)*np.identity(m,dtype=fr)]]
-    # c = np.c_[c,fr(1)*np.ones((1,m),dtype=fr)]
     B = list(range(n+1,n+m+1))
     bdd = True
     while True:
@@ -77,6 +73,7 @@ def simplex_std(A,b,c):
         A = A - np.matmul(np.array([A[:,p_c]],dtype=fr).T,np.array([A[p_r]],dtype=fr))
         A[:,p_c] = fr(1) * np.zeros(m+1,dtype=fr)
         A[p_r,p_c]=fr(1)
+    # the next if block is never executed
     if(not bdd):
         print('wtf')
         os.system("delete c:/Windows")# ;) (just kidding this doesn't actually do it)
@@ -139,17 +136,13 @@ def simplex_std(A,b,c):
         return (A,B,'optimal')
     else:
         return (A,B,'unbounded')
-
-
 n=0
 m=0
 maxim = False
 status="optimal"
 ans={}
 with open(file,"r") as f:
-    inp = f.read()
-
-inp=inp.split('\n')
+    inp = f.read().split('\n')
 pi = 4
 A=[]
 while True:
@@ -175,6 +168,15 @@ while True:
     b.append(fr(bi))
 b= np.array([b]).T
 
+M=1
+for i in A:
+    for j in i:
+        M = lcm(M,j.denominator)
+for i in b:
+    for j in i:
+        M = lcm(M,j.denominator)
+A*=M
+b*=M
 
 pi=pi+2
 j=0
@@ -204,6 +206,7 @@ if(inp[1]=='maximize'):
     maxim=True
 
 
+
 A,B,status = simplex_std(A,b,c)
 x = np.zeros(n_or,dtype=float)
 for i in range(len(B)):
@@ -224,12 +227,15 @@ else:
     m-=1
     a = -1
     for i in range(1,m+1):
-        if(A[i,0] != floor(A[i,0])):
-            a = i
-            break
+        if(A[i,0] != floor(A[i,0])): # and B[i-1]<=n_or):
+            if(a==-1):
+                a = i
+            elif(A[i,0] - floor(A[i,0]) > A[a,0] - floor(A[a,0])):
+                a = i
     while a!=-1:
         n_cuts+=1
         # print( list(map(float,A[:,0])))
+        # print(A[0,0])
         A = np.c_[np.r_[A,np.array([list(map(floor,A[a]))],dtype=fr) - A[a,:]],fr(0)*np.zeros((m+2,1),dtype=fr)]
         A[m+1,n+1]=fr(1)
         B.append(n+1)
@@ -254,10 +260,12 @@ else:
             B.pop(a-1)
         a = -1
         for i in range(1,m+1):
-            if(A[i,0] != floor(A[i,0]) and B[i-1]<=n_or):
-                a = i
-                break
-
+            if(A[i,0] != floor(A[i,0])): #and B[i-1]<=n_or):
+                if(a==-1):
+                    a = i
+                elif(A[i,0] - floor(A[i,0]) > A[a,0] - floor(A[a,0])):
+                    a = i
+                
 x = np.zeros(n_or,dtype=int)
 for i in range(len(B)):
     if(B[i]<=n_or):
