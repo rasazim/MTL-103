@@ -2,7 +2,7 @@ import numpy as np
 from math import *
 from fractions import Fraction as fr
 
-file = 'input_ilp.txt'
+file = 'input_ilp7.txt'
 
 def dual_simplex(A,B):
     m,n = A.shape
@@ -207,14 +207,19 @@ def gomory_cut_algo():
         n-=1
         m-=1
         a = -1
-        for i in range(1,m+1):
+        for i in range(0,m+1):
             if(A[i,0] != floor(A[i,0])): # and B[i-1]<=n_or):
                 if(a==-1):
                     a = i
                 elif(A[i,0] - floor(A[i,0]) > A[a,0] - floor(A[a,0])):
                     a = i
+        # for i in range(0,m+1):
+        #     if(A[i,0] != floor(A[i,0])): #and B[i-1]<=n_or):
+        #         a=i
+        #         break
         while a!=-1:
             n_cuts+=1
+            # print(A[0,0])
             A = np.c_[np.r_[A,np.array([list(map(floor,A[a]))],dtype=fr) - A[a,:]],fr(0)*np.zeros((m+2,1),dtype=fr)]
             A[m+1,n+1]=fr(1)
             B.append(n+1)
@@ -238,12 +243,16 @@ def gomory_cut_algo():
             for a in tbdB:
                 B.pop(a-1)
             a = -1
-            for i in range(1,m+1):
+            # for i in range(0,m+1):
+            #     if(A[i,0] != floor(A[i,0])): #and B[i-1]<=n_or):
+            #         if(a==-1):
+            #             a = i
+            #         elif(A[i,0] - floor(A[i,0]) > A[a,0] - floor(A[a,0])):
+            #             a = i
+            for i in range(0,m+1):
                 if(A[i,0] != floor(A[i,0])): #and B[i-1]<=n_or):
-                    if(a==-1):
-                        a = i
-                    elif(A[i,0] - floor(A[i,0]) > A[a,0] - floor(A[a,0])):
-                        a = i
+                    a=i
+                    break
                     
     x = np.zeros(n_or,dtype=int)
     for i in range(len(B)):
