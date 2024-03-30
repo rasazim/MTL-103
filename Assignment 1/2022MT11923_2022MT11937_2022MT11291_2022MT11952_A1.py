@@ -53,7 +53,6 @@ def simplex_algo():
             ns=ns+1
         pi=pi+1
         j=j+1
-    print(A)
 
 
 
@@ -113,10 +112,8 @@ def simplex_algo():
     else:
         M = M[0:m,0:2*n+ns+1]
         tbd =[]
-        print(1.0*M)
         for j in range(m):
             if(not M[j].any()):
-                print(M[j])
                 tbd.append(j)
             elif(B[j]>=2*n+ns):
                 p_r = j
@@ -130,7 +127,7 @@ def simplex_algo():
                 M = M - np.matmul(np.array([M[:,p_c]]).T,np.array([M[p_r]]))
                 M[:,p_c] = fr(1)*np.zeros(m,dtype=fr)
                 M[p_r,p_c] = fr(1)
-        print(tbd)
+
         M=np.delete(M,tbd,axis=0)
         for j in tbd:
             B.pop(j)
@@ -191,18 +188,9 @@ def simplex_algo():
     ans["optimal_value"] = float(-r_0[0,0])
     return ans
 
-ans= simplex_algo()
-import pprint
-# # print(np.array(ans['initial_tableau'],dtype=str))
-# np.set_printoptions(threshold=np.inf)
-pp = pprint.PrettyPrinter(indent=4)
-pp.pprint(np.array(ans['final_tableau'],dtype=float))
-print(np.array(ans['optimal_solution'],dtype=float))
-print(float(ans['optimal_value']))
-print(ans['solution_status'])
-ans= simplex_algo()
+# ans= simplex_algo()
 # import pprint
-# print(np.array(ans['initial_tableau'],dtype=str))
+# # print(np.array(ans['initial_tableau'],dtype=str))
 # np.set_printoptions(threshold=np.inf)
 # pp = pprint.PrettyPrinter(indent=4)
 # pp.pprint(np.array(ans['final_tableau'],dtype=float))
